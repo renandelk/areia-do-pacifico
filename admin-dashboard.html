@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Areia do Pacífico - Painel Administrativo</title>
+  <style>
+    :root {
+      --primary: #1a44a1;
+      --primary-light: #2756b3;
+      --primary-dark: #0f3284;
+      --accent: #ff6b6b;
+      --dark: #0f172a;
+      --light: #f8fafc;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --sidebar-width: 250px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+    
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--dark);
+      color: #fff;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+    }
+    
+    .sidebar-menu {
+      list-style-type: none;
+      padding: 10px 0;
+    }
+    
+    .menu-item {
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .menu-item.active {
+      background-color: var(--primary);
+      color: #fff;
+    }
+    
+    .menu-icon {
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .menu-label {
+      font-size: 0.9rem;
+    }
+    
+    .menu-section {
+      padding: 15px 20px 5px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Main content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      transition: all 0.3s ease;
+    }
+    
+    /* Header */
+    .header {
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-bar {
+      position: relative;
+      margin-right: 20px;
+    }
+    
+    .search-input {
+      padding: 8px 15px 8px 35px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 250px;
+      transition: all 0.3s;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(26, 68, 161, 0.2);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-weight: 600;
+    }
+    
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .user-role {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    
+    /* Dashboard content */
+    .dashboard {
+      padding: 30px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    
+    .icon-revenue {
+      background-color: var(--primary);
+    }
+    
+    .icon-orders {
+      background-color: var(--success);
+    }
+    
+    .icon-products {
+      background-color: var(--warning);
+    }
+    
+    .icon-customers {
+      background-color: var(--info);
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .stat-desc {
+      font-size: 0.8rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+    }
+    
+    .trend-up {
+      color: var(--success);
+      margin-right: 5px;
+    }
+    
+    .trend-down {
+      color: var(--error);
+      margin-right: 5px;
+    }
+    
+    /* Charts row */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .chart-card {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .chart-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .chart-period {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    
+    .chart-container {
+      height: 250px;
+      width: 100%;
+      position: relative;
+    }
+    
+    /* Mock sales chart */
+    .sales-chart {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 20px;
+    }
+    
+    .chart-bar {
+      flex: 1;
+      margin: 0 5px;
+      background-color: rgba(26, 68, 161, 0.2);
+      border-radius: 5px 5px 0 0;
+      position: relative;
+      min-height: 20px;
+      transition: all 0.3s;
+    }
+    
+    .chart-bar:hover {
+      background-color: rgba(26, 68, 161, 0.4);
+    }
+    
+    .chart-bar::after {
+      content: attr(data-value);
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #334155;
+      font-weight: 600;
+    }
+    
+    .chart-bar::before {
+      content: attr(data-label);
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    
+    /* Donut chart */
+    .donut-chart {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--primary) 0% 40%,
+        var(--success) 40% 70%,
+        var(--warning) 70% 90%,
+        var(--accent) 90% 100%
+      );
+    }
+    
+    .donut-hole {
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      background-color: #fff;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .chart-legend {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 10px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 6px;
+    }
+    
+    .legend-text {
+      font-size: 0.8rem;
+      color: #334155;
+    }
+    
+    /* Recent activity and orders */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .activity-card {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .activity-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .activity-actions {
+      font-size: 0.8rem;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .activity-icon-blue {
+      background-color: rgba(26, 68, 161, 0.1);
+      color: var(--primary);
+    }
+    
+    .activity-icon-green {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .activity-icon-orange {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .activity-icon-red {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-text {
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+    }
+    
+    .activity-text strong {
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .activity-meta {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+    }
+    
+    .activity-time {
+      margin-right: 10px;
+    }
+    
+    /* Order list */
+    .order-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .order-info {
+      flex: 1;
+    }
+    
+    .order-id {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 3px;
+    }
+    
+    .order-meta {
+      display: flex;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    
+    .order-date {
+      margin-right: 15px;
+    }
+    
+    .order-customer {
+      color: var(--primary);
+    }
+    
+    .order-status {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+      min-width: 80px;
+    }
+    
+    .status-paid {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .status-pending {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .status-processing {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--info);
+    }
+    
+    .status-cancelled {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+    
+    .order-price {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-left: 15px;
+      color: #334155;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .activity-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .search-input {
+        width: 180px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .header-actions {
+        margin-top: 15px;
+        width: 100%;
+      }
+      
+      .search-bar {
+        flex: 1;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="adminPanel">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">Areia do Pacífico</div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="menu-item active">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          <span class="menu-label">Dashboard</span>
+        </li>
+        
+        <li class="menu-section">Gerenciamento</li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          </span>
+          <span class="menu-label">Produtos</span>
+        </li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5"/><path d="M5 11H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-2"/><path d="M9 11h6"/></svg>
+          </span>
+          <span class="menu-label">Categorias</span>
+        </li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </span>
+          <span class="menu-label">Pedidos</span>
+        </li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span class="menu-label">Clientes</span>
+        </li>
+        
+        <li class="menu-section">Análises</li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </span>
+          <span class="menu-label">Relatórios</span>
+        </li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </span>
+          <span class="menu-label">Histórico</span>
+        </li>
+        
+        <li class="menu-section">Configurações</li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          <span class="menu-label">Configurações</span>
+        </li>
+        
+        <li class="menu-item">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+          </span>
+          <span class="menu-label">Integrações</span>
+        </li>
+        
+        <li class="menu-item" id="logoutBtn">
+          <span class="menu-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          </span>
+          <span class="menu-label">Sair</span>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="header">
+        <h1 class="page-title">Dashboard</h1>
+        
+        <div class="header-actions">
+          <div class="search-bar">
+            <span class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input type="text" class="search-input" placeholder="Pesquisar...">
+          </div>
+          
+          <div class="user-menu">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+              <div class="user-name">Admin</div>
+              <div class="user-role">Administrador</div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <div class="dashboard">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Faturamento</div>
+              <div class="stat-icon icon-revenue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <div class="stat-value">R$27.350</div>
+            <div class="stat-desc">
+              <span class="trend-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 18 6-12 6 12"/></svg>
+                15.3%
+              </span>
+              em relação ao mês anterior
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Pedidos</div>
+              <div class="stat-icon icon-orders">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+            </div>
+            <div class="stat-value">148</div>
+            <div class="stat-desc">
+              <span class="trend-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 18 6-12 6 12"/></svg>
+                8.2%
+              </span>
+              em relação ao mês anterior
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Produtos Ativos</div>
+              <div class="stat-icon icon-products">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+              </div>
+            </div>
+            <div class="stat-value">87</div>
+            <div class="stat-desc">
+              <span class="trend-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 18 6-12 6 12"/></svg>
+                3.7%
+              </span>
+              novos produtos este mês
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Clientes</div>
+              <div class="stat-icon icon-customers">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
+            <div class="stat-value">429</div>
+            <div class="stat-desc">
+              <span class="trend-up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 18 6-12 6 12"/></svg>
+                12.5%
+              </span>
+              novos clientes este mês
+            </div>
+          </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Vendas Recentes</div>
+              <div class="chart-period">Últimos 7 dias</div>
+            </div>
+            <div class="chart-container">
+              <div class="sales-chart">
+                <div class="chart-bar" style="height: 70%;" data-value="R$3.540" data-label="Seg"></div>
+                <div class="chart-bar" style="height: 85%;" data-value="R$4.250" data-label="Ter"></div>
+                <div class="chart-bar" style="height: 60%;" data-value="R$3.020" data-label="Qua"></div>
+                <div class="chart-bar" style="height: 75%;" data-value="R$3.750" data-label="Qui"></div>
+                <div class="chart-bar" style="height: 90%;" data-value="R$4.500" data-label="Sex"></div>
+                <div class="chart-bar" style="height: 100%;" data-value="R$5.000" data-label="Sáb"></div>
+                <div class="chart-bar" style="height: 65%;" data-value="R$3.290" data-label="Dom"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Vendas por Categoria</div>
+              <div class="chart-period">Este mês</div>
+            </div>
+            <div class="chart-container">
+              <div class="donut-chart">
+                <div class="donut-hole"></div>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-color" style="background-color: var(--primary);"></div>
+                  <div class="legend-text">Biquínis (40%)</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background-color: var(--success);"></div>
+                  <div class="legend-text">Maiôs (30%)</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background-color: var(--warning);"></div>
+                  <div class="legend-text">Saídas (20%)</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background-color: var(--accent);"></div>
+                  <div class="legend-text">Vestidos (10%)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Activity and Orders -->
+        <div class="activity-grid">
+          <!-- Recent Activity -->
+          <div class="activity-card">
+            <div class="activity-header">
+              <div class="activity-title">Atividades Recentes</div>
+              <div class="activity-actions">Ver tudo</div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="activity-icon activity-icon-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Novo pedido</strong> recebido de <strong>Maria Silva</strong>
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-time">Agora mesmo</span>
+                  <span class="activity-type">Pedido #1842</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="activity-icon activity-icon-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Novos clientes</strong> se registraram na plataforma
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-time">10 minutos atrás</span>
+                  <span class="activity-type">Usuários</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="activity-icon activity-icon-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Estoque baixo</strong> para o produto <strong>Biquíni Tropical</strong>
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-time">1 hora atrás</span>
+                  <span class="activity-type">Inventário</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="activity-icon activity-icon-red">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Promoção criada</strong> para a coleção <strong>Verão 2025</strong>
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-time">3 horas atrás</span>
+                  <span class="activity-type">Marketing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent Orders -->
+          <div class="activity-card">
+            <div class="activity-header">
+              <div class="activity-title">Pedidos Recentes</div>
+              <div class="activity-actions">Ver tudo</div>
+            </div>
+            
+            <div class="order-item">
+              <div class="order-info">
+                <div class="order-id">#1842</div>
+                <div class="order-meta">
+                  <div class="order-date">06/04/2025</div>
+                  <div class="order-customer">Maria Silva</div>
+                </div>
+              </div>
+              <div class="order-status status-paid">Pago</div>
+              <div class="order-price">R$389,90</div>
+            </div>
+            
+            <div class="order-item">
+              <div class="order-info">
+                <div class="order-id">#1841</div>
+                <div class="order-meta">
+                  <div class="order-date">06/04/2025</div>
+                  <div class="order-customer">João Santos</div>
+                </div>
+              </div>
+              <div class="order-status status-processing">Processando</div>
+              <div class="order-price">R$259,80</div>
+            </div>
+            
+            <div class="order-item">
+              <div class="order-info">
+                <div class="order-id">#1840</div>
+                <div class="order-meta">
+                  <div class="order-date">05/04/2025</div>
+                  <div class="order-customer">Ana Oliveira</div>
+                </div>
+              </div>
+              <div class="order-status status-pending">Pendente</div>
+              <div class="order-price">R$478,50</div>
+            </div>
+            
+            <div class="order-item">
+              <div class="order-info">
+                <div class="order-id">#1839</div>
+                <div class="order-meta">
+                  <div class="order-date">05/04/2025</div>
+                  <div class="order-customer">Carlos Mendes</div>
+                </div>
+              </div>
+              <div class="order-status status-cancelled">Cancelado</div>
+              <div class="order-price">R$129,90</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar autenticação do usuário
+      async function checkAuthentication() {
+        try {
+          const response = await fetch('/api/auth/check-admin-session', {
+            credentials: 'include',
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok || !data.authorized) {
+            // Redirecionar para página de login se não autenticado
+            window.location.href = '/admin-login.html';
+            return false;
+          }
+          
+          // Atualizar informações do usuário no dashboard
+          const userAvatar = document.querySelector('.user-avatar');
+          const userName = document.querySelector('.user-name');
+          const userRole = document.querySelector('.user-role');
+          
+          if (data.user) {
+            userAvatar.textContent = data.user.name ? data.user.name.substring(0, 1) : data.user.username.substring(0, 1);
+            userName.textContent = data.user.name || data.user.username;
+            userRole.textContent = data.user.role === 'admin' ? 'Administrador' : 'Usuário';
+          }
+          
+          return true;
+        } catch (error) {
+          console.error('Erro ao verificar autenticação:', error);
+          window.location.href = '/admin-login.html';
+          return false;
+        }
+      }
+      
+      // Verificar autenticação ao carregar a página
+      checkAuthentication();
+      
+      // Função de logout
+      document.getElementById('logoutBtn').addEventListener('click', async function() {
+        try {
+          const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          // Redirecionar para a página de login
+          window.location.href = '/admin-login.html';
+        } catch (error) {
+          console.error('Erro ao fazer logout:', error);
+        }
+      });
+      
+      // Toggle sidebar on mobile
+      const sidebarToggle = document.querySelector('.sidebar-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const mainContent = document.querySelector('.main-content');
+      
+      sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        if (window.innerWidth <= 768) {
+          if (sidebar.classList.contains('active')) {
+            mainContent.style.marginLeft = '250px';
+          } else {
+            mainContent.style.marginLeft = '0';
+          }
+        }
+      });
+      
+      // Resize handling
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+          mainContent.style.marginLeft = '250px';
+          sidebar.classList.remove('active');
+        } else {
+          if (!sidebar.classList.contains('active')) {
+            mainContent.style.marginLeft = '0';
+          }
+        }
+      });
+      
+      // Menu item click
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+          menuItems.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

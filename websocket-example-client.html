@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cliente WebSocket</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #messages {
+      height: 300px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .system {
+      background-color: #f0f0f0;
+    }
+    .broadcast {
+      background-color: #e3f2fd;
+    }
+    .error {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+    .connection-status {
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .connected {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    .disconnected {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
+    button:disabled {
+      background-color: #b0bec5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cliente WebSocket</h1>
+  
+  <div id="status" class="connection-status disconnected">Desconectado</div>
+  
+  <div id="messages"></div>
+  
+  <div class="form-group">
+    <label for="username">Nome de Usuário:</label>
+    <input type="text" id="username" placeholder="Digite seu nome">
+  </div>
+  
+  <div class="form-group">
+    <label for="message">Mensagem:</label>
+    <textarea id="message" rows="3" placeholder="Digite sua mensagem"></textarea>
+  </div>
+  
+  <button id="send" disabled>Enviar</button>
+  <button id="connect">Conectar</button>
+  <button id="disconnect" disabled>Desconectar</button>
+  
+  <script>
+    // Elementos da UI
+    const statusEl = document.getElementById('status');
+    const messagesEl = document.getElementById('messages');
+    const usernameEl = document.getElementById('username');
+    const messageEl = document.getElementById('message');
+    const sendBtn = document.getElementById('send');
+    const connectBtn = document.getElementById('connect');
+    const disconnectBtn = document.getElementById('disconnect');
+    
+    let socket = null;
+    
+    // Função para adicionar mensagem ao painel
+    function addMessage(type, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = content;
+      messagesEl.appendChild(messageDiv);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    
+    // Função para conectar ao WebSocket
+    function connect() {
+      if (socket) {
+        socket.close();
+      }
+      
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      
+      addMessage('system', `Conectando a ${wsUrl}...`);
+      
+      try {
+        socket = new WebSocket(wsUrl);
+        
+        socket.onopen = () => {
+          statusEl.className = 'connection-status connected';
+          statusEl.textContent = 'Conectado';
+          addMessage('system', 'Conexão estabelecida!');
+          
+          sendBtn.disabled = false;
+          connectBtn.disabled = true;
+          disconnectBtn.disabled = false;
+        };
+        
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'message') {
+              addMessage('system', `${data.content} (${new Date(data.timestamp).toLocaleTimeString()})`);
+            } else if (data.type === 'broadcast') {
+              addMessage('broadcast', `${data.sender}: ${data.content} (${new Date(data.timestamp).toLocaleTimeString()})`);
+            }
+          } catch (error) {
+            addMessage('error', `Erro ao processar mensagem: ${error.message}`);
+          }
+        };
+        
+        socket.onclose = () => {
+          statusEl.className = 'connection-status disconnected';
+          statusEl.textContent = 'Desconectado';
+          addMessage('system', 'Conexão fechada');
+          
+          sendBtn.disabled = true;
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        };
+        
+        socket.onerror = (error) => {
+          addMessage('error', `Erro de WebSocket: ${error.message || 'Erro desconhecido'}`);
+        };
+      } catch (error) {
+        addMessage('error', `Erro ao criar WebSocket: ${error.message}`);
+      }
+    }
+    
+    // Função para desconectar
+    function disconnect() {
+      if (socket) {
+        socket.close();
+        socket = null;
+      }
+    }
+    
+    // Função para enviar mensagem
+    function sendMessage() {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        addMessage('error', 'Não conectado ao servidor');
+        return;
+      }
+      
+      const username = usernameEl.value.trim() || 'Anônimo';
+      const content = messageEl.value.trim();
+      
+      if (!content) {
+        return;
+      }
+      
+      try {
+        socket.send(JSON.stringify({
+          username,
+          content
+        }));
+        
+        // Limpar campo de mensagem
+        messageEl.value = '';
+      } catch (error) {
+        addMessage('error', `Erro ao enviar mensagem: ${error.message}`);
+      }
+    }
+    
+    // Event listeners
+    connectBtn.addEventListener('click', connect);
+    disconnectBtn.addEventListener('click', disconnect);
+    sendBtn.addEventListener('click', sendMessage);
+    
+    messageEl.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+    
+    // Conectar-se automaticamente ao carregar a página
+    window.addEventListener('load', () => {
+      // Adicionar mensagem inicial
+      addMessage('system', 'Cliente WebSocket iniciado. Clique em "Conectar" para iniciar a conexão.');
+    });
+  </script>
+</body>
+</html>

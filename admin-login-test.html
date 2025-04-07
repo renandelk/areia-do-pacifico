@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login Administrativo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            color: #e91e63;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            color: #f0f0f0;
+            border-left: 4px solid #e91e63;
+            padding-left: 10px;
+            margin-top: 2rem;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        label {
+            font-weight: bold;
+        }
+        
+        input {
+            padding: 0.75rem;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #f0f0f0;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: #e91e63;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #c2185b;
+        }
+        
+        .output-container {
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 1rem;
+            background-color: #333;
+            min-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .debug-tool {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+        }
+        
+        .debug-btn {
+            background-color: #2196f3;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .debug-btn:hover {
+            background-color: #0d8bf2;
+        }
+        
+        .check-session {
+            background-color: #ff9800;
+        }
+        
+        .check-session:hover {
+            background-color: #e68900;
+        }
+        
+        .clear-log {
+            background-color: #9c27b0;
+        }
+        
+        .clear-log:hover {
+            background-color: #7b1fa2;
+        }
+        
+        pre {
+            margin: 0;
+        }
+        
+        .timestamp {
+            color: #999;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+        
+        .log-request {
+            color: #03a9f4;
+        }
+        
+        .log-response {
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verificador de Autenticação Administrativa</h1>
+        
+        <h2>Login Administrativo</h2>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username">Usuário:</label>
+                <input type="text" id="username" name="username" placeholder="Digite o nome de usuário" value="renan1">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" placeholder="Digite a senha" value="Familia@1">
+            </div>
+            <button type="submit">Fazer Login</button>
+        </form>
+        
+        <h2>Resultado da Operação</h2>
+        <div id="output" class="output-container"></div>
+        
+        <div class="debug-tool">
+            <h2>Ferramentas de Depuração</h2>
+            <button id="checkAuthBtn" class="debug-btn">Verificar Autenticação (Me)</button>
+            <button id="checkAdminBtn" class="debug-btn check-session">Verificar Sessão Admin</button>
+            <button id="logoutBtn" class="debug-btn">Fazer Logout</button>
+            <button id="clearBtn" class="debug-btn clear-log">Limpar Log</button>
+        </div>
+    </div>
+    
+    <script>
+        // Função para adicionar uma linha de log com timestamp
+        function log(message, type = '') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            
+            const timeElement = document.createElement('div');
+            timeElement.className = 'timestamp';
+            timeElement.textContent = `[${timestamp}]`;
+            
+            const messageElement = document.createElement('pre');
+            messageElement.className = type;
+            
+            // Se a mensagem for um objeto, formatar como JSON
+            if (typeof message === 'object') {
+                messageElement.textContent = JSON.stringify(message, null, 2);
+            } else {
+                messageElement.textContent = message;
+            }
+            
+            logEntry.appendChild(timeElement);
+            logEntry.appendChild(messageElement);
+            
+            const outputDiv = document.getElementById('output');
+            outputDiv.appendChild(logEntry);
+            
+            // Auto-rolagem para o final
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+        
+        // Função para fazer requisições HTTP
+        async function makeRequest(url, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    },
+                    credentials: 'include'
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                log(`${method} ${url}`, 'log-request');
+                if (data) {
+                    log(data, 'log-request');
+                }
+                
+                const response = await fetch(url, options);
+                const responseData = await response.json();
+                
+                log(`Resposta (${response.status}):`, 'log-response');
+                log(responseData, 'log-response');
+                
+                return { ok: response.ok, data: responseData };
+            } catch (error) {
+                log(`Erro na requisição: ${error.message}`, 'error');
+                return { ok: false, error: error.message };
+            }
+        }
+        
+        // Manipulador do formulário de login
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            log(`Tentando login com usuário: ${username}`, 'log-request');
+            
+            try {
+                // 1. Tentar login administrativo
+                const result = await makeRequest('/api/auth/admin-login', 'POST', { username, password });
+                
+                if (result.ok) {
+                    log('Login bem-sucedido!', 'success');
+                    
+                    // 2. Verificar autenticação (primeira verificação)
+                    const authCheck = await makeRequest('/api/auth/me', 'GET');
+                    
+                    if (authCheck.ok) {
+                        log('Verificação de autenticação bem-sucedida', 'success');
+                        
+                        // 3. Segunda verificação após 1 segundo
+                        setTimeout(async () => {
+                            const secondCheck = await makeRequest('/api/auth/me', 'GET');
+                            
+                            if (secondCheck.ok) {
+                                log('Segunda verificação bem-sucedida, sessão persistente', 'success');
+                                
+                                // 4. Verificação de sessão administrativa
+                                const adminCheck = await makeRequest('/api/auth/check-admin-session', 'GET');
+                                
+                                if (adminCheck.ok && adminCheck.data.authorized) {
+                                    log('Sessão administrativa válida', 'success');
+                                } else {
+                                    log('Falha na verificação de sessão administrativa', 'error');
+                                }
+                            } else {
+                                log('Segunda verificação falhou, sessão não persistente', 'error');
+                                
+                                // Tentar recuperar sessão
+                                log('Tentando recuperar sessão...', 'log-request');
+                                
+                                const refreshLogin = await makeRequest('/api/auth/admin-login', 'POST', { username, password });
+                                
+                                if (refreshLogin.ok) {
+                                    log('Sessão recuperada com sucesso', 'success');
+                                } else {
+                                    log('Falha ao recuperar sessão', 'error');
+                                }
+                            }
+                        }, 1000);
+                    } else {
+                        log('Verificação de autenticação falhou mesmo após login', 'error');
+                    }
+                } else {
+                    log('Falha no login administrativo', 'error');
+                }
+            } catch (error) {
+                log(`Erro durante o processo: ${error.message}`, 'error');
+            }
+        });
+        
+        // Botão de verificação de autenticação
+        document.getElementById('checkAuthBtn').addEventListener('click', async function() {
+            log('Verificando status de autenticação...', 'log-request');
+            await makeRequest('/api/auth/me', 'GET');
+        });
+        
+        // Botão de verificação de sessão administrativa
+        document.getElementById('checkAdminBtn').addEventListener('click', async function() {
+            log('Verificando sessão administrativa...', 'log-request');
+            await makeRequest('/api/auth/check-admin-session', 'GET');
+        });
+        
+        // Botão de logout
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            log('Realizando logout...', 'log-request');
+            await makeRequest('/api/auth/logout', 'POST');
+        });
+        
+        // Botão de limpar log
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            document.getElementById('output').innerHTML = '';
+            log('Log limpo', 'success');
+        });
+        
+        // Iniciar com uma verificação de autenticação para ver o estado atual
+        document.addEventListener('DOMContentLoaded', async function() {
+            log('Inicializando verificador de autenticação...', 'success');
+            await makeRequest('/api/auth/check-admin-session', 'GET');
+        });
+    </script>
+</body>
+</html>

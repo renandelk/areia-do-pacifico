@@ -1,0 +1,36 @@
+{pkgs}: {
+  deps = [
+    pkgs.nodejs
+    pkgs.deepin.dwayland
+    pkgs.rPackages.AllPossibleSpellings
+    pkgs.rPackages.DIME
+    pkgs.miniball
+    pkgs.emacsPackages.flycheck-clangcheck
+    pkgs.emacsPackages.solo-jazz-theme
+    pkgs.cudaPackages.cuda_nvprof
+    pkgs.libcardiacarrest
+    pkgs.gnomeExtensions.net-speed
+    pkgs.rPackages.apportion
+    pkgs.rPackages.neatR
+    pkgs.python311Packages.aionanoleaf
+    pkgs.haskellPackages.dependent-map_0_2_4_0
+    pkgs.python311Packages.pixel-ring
+    pkgs.rPackages.motifbreakR
+    pkgs.rubyPackages_3_2.forwardable-extended
+    pkgs.ppsspp-qt
+    pkgs.gnomeExtensions.window-calls-extended
+    pkgs.haskellPackages.phonetic-languages-phonetics-basics
+    pkgs.lomiri.lomiri-wallpapers
+    pkgs.gnomeExtensions.eortologio-extension
+    pkgs.haskellPackages.optimusprime
+    pkgs.sbclPackages.lispqr
+    pkgs.bsequencer
+    pkgs.leiningen
+    pkgs.python312Packages.nvdlib
+    pkgs.lua51Packages.luatext
+    pkgs.sbclPackages.cl-glfw-opengl-sgis__texture__filter4
+    pkgs.ipscan
+    pkgs.jq
+    pkgs.postgresql
+  ];
+}
