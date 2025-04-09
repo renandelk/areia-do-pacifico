@@ -66,11 +66,3 @@ A interface foi preparada para comunicação com endpoints de API:
 2. **Endpoints de Backend**:
    - Os endpoints de API mencionados acima precisam estar implementados no backend.
    - Eles devem seguir os formatos de resposta esperados pelos componentes frontend.
-
-## Melhorias Futuras
-
-1. Implementação de filtros avançados na listagem de pagamentos
-2. Suporte para exportação de relatórios de pagamentos (CSV/PDF)
-3. Integração com mais gateways de pagamento além do MercadoPago
-4. Dashboard de métricas financeiras (faturamento, taxa de conversão, etc.)
-5. Implementação de estornos e reembolsos diretamente pela interface
